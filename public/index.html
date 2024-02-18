@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Embedded Vue Component</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <script src="https://unpkg.com/vue@2"></script>
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+
+<body>
+
+  <div id="app">
+    <!-- Embedded Vue component -->
+    <script type="text/x-template" id="embedded-component">
+      <div>
+        <el-table :data="groupList" style="width: 100%" :default-sort="{prop: 'groupId', order: 'ascending'}">
+          <el-table-column label="Group ID" prop="groupId"></el-table-column>
+          <el-table-column label="Group Name" prop="groupName"></el-table-column>
+          <el-table-column label="Users">
+            <template slot-scope="scope">
+              <el-table
+                :data="scope.row.users"
+                style="width: 100%"
+                :row-class-name="rowClassName"
+                :default-sort="{prop: 'id', order: 'ascending'}"
+              >
+                <el-table-column label="User ID" prop="id" sortable></el-table-column>
+                <el-table-column label="Name" prop="name"></el-table-column>
+                <el-table-column label="Email" prop="email"></el-table-column>
+                <el-table-column label="Role" prop="role"></el-table-column>
+                <el-table-column label="Created At">
+                  <template slot-scope="userScope">
+                    {{ formatDate(userScope.row.createdAt) }}
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </script>
+
+    <!-- Render embedded component -->
+    <div id="embedded-component-container"></div>
+  </div>
+
+  <script>
+    // Define the Vue component
+    Vue.component('embedded-component', {
+      template: '#embedded-component',
+      data() {
+        return {
+          groupList: []
+        };
+      },
+      created() {
+        // Populate groupList with data
+        this.groupList = [
+          {
+            groupId: 1,
+            groupName: "Admin Group",
+            users: [
+              {
+                id: 1,
+                name: "John Doe",
+                email: "john.doe@example.com",
+                role: "admin",
+                createdAt: "2023-01-01T00:00:00Z"
+              },
+              // More users...
+            ]
+          },
+          {
+            groupId: 2,
+            groupName: "Editor Group",
+            users: [
+              // More users...
+            ]
+          }
+          // More groups...
+        ];
+      },
+      methods: {
+        formatDate(dateString) {
+          const date = new Date(dateString);
+          return date.toLocaleDateString();
+        },
+        rowClassName() {
+          return 'nested-table-row';
+        }
+      }
+    });
+
+    // Mount the Vue app
+    new Vue({
+      el: '#embedded-component-container'
+    });
+  </script>
+
+</body>
+
+</html>
